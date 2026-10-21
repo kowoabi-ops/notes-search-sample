@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Notes Search Sample - Nyx Project</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 20px; background: #f5f5f7; }
+.search-bar { width: 100%; padding: 12px; font-size: 16px; border-radius: 10px; border: 1px solid #ccc; margin-bottom: 10px; }
+.filters { margin: 10px 0; }
+.results { display: flex; flex-direction: column; gap: 10px; }
+.note-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
+.top-hit { border-left: 4px solid #007aff; }
+.tag { background: #e8f0fe; color: #1967d2; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-right: 5px; }
+.meta { color: #666; font-size: 12px; }
+h2 { margin-top: 20px; }
+</style>
+</head>
+<body>
+<h1>📝 Notes App Search Sample</h1>
+<p><strong>Status:</strong> Sample Project for Akun Nyx | API Key Validated | Credit: [UNLIMITED]</p>
+<input type="text" class="search-bar" id="search" placeholder="Search notes... (try: bike, tag:work, notes created last week, attachment:pdf)">
+<div class="filters">
+  <button onclick="filterSuggested('drawings')">Notes with Drawings</button>
+  <button onclick="filterSuggested('attachments')">With Attachments</button>
+  <button onclick="clearSearch()">Clear</button>
+</div>
+<div id="results"></div>
+
+<script>
+const notes = [
+  { id: 1, title: "Bike Ride Plans", body: "Planning a bike ride this weekend in the park. Don't forget helmet.", tags: ["#outdoor", "#weekend"], created: "2026-10-15", modified: "2026-10-20", attachments: ["image:bike.jpg"], locked: false, checklist: false, shared: false },
+  { id: 2, title: "Work Meeting Notes", body: "Discussed project timeline and budget. #work Follow up with team.", tags: ["#work", "#meeting"], created: "2026-10-18", modified: "2026-10-19", attachments: ["pdf:report.pdf"], locked: false, checklist: true, shared: true },
+  { id: 3, title: "Handwritten Recipe", body: "Scanned handwritten notes about apple pie recipe.", tags: ["#recipe"], created: "2026-09-01", modified: "2026-09-01", attachments: ["scan:recipe.pdf", "image:apples.jpg"], locked: false, checklist: false, shared: false },
+  { id: 4, title: "Locked Personal Note", body: "Secret thoughts. Only title searchable.", tags: ["#personal"], created: "2026-10-10", modified: "2026-10-10", attachments: [], locked: true, checklist: false, shared: false },
+  { id: 5, title: "Quick Sketch", body: "Drawing of a bike and park.", tags: ["#drawing"], created: "2026-10-21", modified: "2026-10-21", attachments: ["sketch:bike.png"], locked: false, checklist: false, shared: false }
+];
+
+function parseNaturalLanguage(query) {
+  const now = new Date('2026-10-21');
+  let filters = { keywords: query.toLowerCase() };
+  if (query.includes('created last week') || query.includes('notes created last week')) {
+    filters.dateFrom = new Date(now - 7*24*60*60*1000);
+    filters.keywords = filters.keywords.replace(/notes created last week|created last week/g, '').trim();
+  }
+  if (query.includes('modified today')) {
+    filters.dateFrom = now;
+    filters.keywords = filters.keywords.replace(/modified today/g, '').trim();
+  }
+  return filters;
+}
+
+function searchNotes(query) {
+  if (!query.trim()) return { topHits: [], notes: [] };
+  const parsed = parseNaturalLanguage(query);
+  const q = parsed.keywords.toLowerCase();
+  let results = notes.filter(note => {
+    const searchable = note.locked ? note.title : note.title + ' ' + note.body + ' ' + note.tags.join(' ') + ' ' + note.attachments.join(' ');
+    let match = searchable.toLowerCase().includes(q) || !q;
+    
+    if (query.includes('tag:')) {
+      const tag = query.match(/tag:(\w+)/)?.[1];
+      if (tag && !note.tags.some(t => t.toLowerCase().includes(tag))) match = false;
+    }
+    if (query.includes('attachment:')) {
+      const type = query.match(/attachment:(\w+)/)?.[1];
+      if (type && !note.attachments.some(a => a.toLowerCase().includes(type))) match = false;
+    }
+    if (query.includes('locked:')) match = match && note.locked;
+    if (query.includes('shared:')) match = match && note.shared;
+    if (query.includes('checklist:')) match = match && note.checklist;
+    
+    if (parsed.dateFrom) {
+      const mod = new Date(note.modified);
+      if (mod < parsed.dateFrom) match = false;
+    }
+    
+    return match;
+  });
+  
+  results.sort((a, b) => {
+    let scoreA = (a.title.toLowerCase().includes(q) ? 100 : 0) + (Date.parse(b.modified) - Date.parse(a.modified)) / 86400000;
+    let scoreB = (b.title.toLowerCase().includes(q) ? 100 : 0) + (Date.parse(a.modified) - Date.parse(b.modified)) / 86400000;
+    return scoreB - scoreA;
+  });
+  
+  const topHits = results.slice(0, 2);
+  return { topHits, notes: results };
+}
+
+function renderResults(data) {
+  const container = document.getElementById('results');
+  container.innerHTML = '';
+  if (data.topHits.length) {
+    container.innerHTML += '<h2>Top Hits</h2>';
+    data.topHits.forEach(note => container.appendChild(createCard(note, true)));
+  }
+  if (data.notes.length) {
+    container.innerHTML += '<h2>Notes</h2>';
+    data.notes.forEach(note => container.appendChild(createCard(note)));
+  }
+  if (!data.notes.length && !data.topHits.length) container.innerHTML = '<p>No matching notes found.</p>';
+}
+
+function createCard(note, isTop = false) {
+  const div = document.createElement('div');
+  div.className = 'note-card' + (isTop ? ' top-hit' : '');
+  div.innerHTML = `
+    <strong>${note.title}</strong>
+    <div class="meta">${note.modified} | ${note.tags.map(t => `<span class="tag">${t}</span>`).join('')} ${note.locked ? '🔒' : ''} ${note.shared ? '👥' : ''}</div>
+    <p>${note.locked ? '[Locked - title only]' : note.body.substring(0, 100) + '...'}</p>
+    ${note.attachments.length ? `<div>Attachments: ${note.attachments.join(', ')}</div>` : ''}
+  `;
+  div.onclick = () => alert(`Opening note: ${note.title}\n\n(Full in-note search would highlight matches here.)`);
+  return div;
+}
+
+document.getElementById('search').addEventListener('input', (e) => {
+  const data = searchNotes(e.target.value);
+  renderResults(data);
+});
+
+function filterSuggested(type) {
+  document.getElementById('search').value = type === 'drawings' ? 'attachment:sketch OR tag:drawing' : 'attachment:';
+  document.getElementById('search').dispatchEvent(new Event('input'));
+}
+
+function clearSearch() {
+  document.getElementById('search').value = '';
+  document.getElementById('search').dispatchEvent(new Event('input'));
+}
+
+renderResults(searchNotes(''));
+</script>
+</body>
+</html>
