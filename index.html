@@ -1,251 +1,465 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Notes Search Sample - Nyx Project</title>
-<style>
-  :root {
-    --bg: #f5f5f7;
-    --card: #ffffff;
-    --panel: #0f172a;
-    --accent: #7c3aed;
-    --accent-soft: #ede9fe;
-    --text: #111827;
-    --muted: #6b7280;
-    --line: #e5e7eb;
-    --success: #0f766e;
-  }
-
-  * { box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    margin: 20px;
-    background: var(--bg);
-    color: var(--text);
-  }
-
-  .app-shell {
-    max-width: 1300px;
-    margin: 0 auto;
-  }
-
-  .main-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
-    gap: 20px;
-    align-items: start;
-  }
-
-  .notes-panel,
-  .jarvis-panel {
-    background: var(--card);
-    border-radius: 18px;
-    padding: 20px;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
-  }
-
-  .search-bar {
-    width: 100%;
-    padding: 12px 14px;
-    font-size: 16px;
-    border-radius: 12px;
-    border: 1px solid var(--line);
-    margin-bottom: 12px;
-    background: #fff;
-  }
-
-  .filters {
-    margin: 10px 0 18px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  button {
-    border: none;
-    border-radius: 10px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-
-  .filter-btn {
-    background: #eef2ff;
-    color: #3730a3;
-  }
-
-  .clear-btn {
-    background: #e5e7eb;
-    color: #374151;
-  }
-
-  .results {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .note-card {
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-    cursor: pointer;
-    border: 1px solid var(--line);
-  }
-
-  .top-hit {
-    border-left: 4px solid #007aff;
-    background: linear-gradient(90deg, #f5f9ff, #ffffff);
-  }
-
-  .tag {
-    display: inline-block;
-    background: #e8f0fe;
-    color: #1967d2;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    margin-right: 5px;
-    margin-top: 4px;
-  }
-
-  .meta { color: var(--muted); font-size: 12px; }
-
-  h1 {
-    margin-top: 0;
-    margin-bottom: 8px;
-  }
-
-  h2 { margin-top: 20px; }
-
-  .jarvis-panel {
-    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
-    color: #e5e7eb;
-  }
-
-  .jarvis-panel h2 {
-    margin-top: 0;
-    color: #a78bfa;
-  }
-
-  .status-pill {
-    display: inline-block;
-    background: rgba(34, 197, 94, 0.14);
-    color: #bbf7d0;
-    border: 1px solid rgba(34, 197, 94, 0.4);
-    border-radius: 999px;
-    padding: 6px 10px;
-    font-size: 12px;
-    margin-bottom: 12px;
-  }
-
-  .jarvis-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-
-  .jarvis-mini {
-    background: rgba(167, 139, 250, 0.12);
-    color: #ddd6fe;
-    border: 1px solid rgba(167, 139, 250, 0.35);
-  }
-
-  .jarvis-input {
-    width: 100%;
-    min-height: 80px;
-    resize: vertical;
-    border-radius: 12px;
-    border: 1px solid rgba(148, 163, 184, 0.4);
-    background: rgba(15, 23, 42, 0.7);
-    color: #f8fafc;
-    padding: 10px 12px;
-    margin-bottom: 12px;
-  }
-
-  .jarvis-run {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    color: white;
-    width: 100%;
-    margin-bottom: 14px;
-  }
-
-  .jarvis-output {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(148, 163, 184, 0.35);
-    border-radius: 12px;
-    padding: 14px;
-    min-height: 140px;
-    color: #e5e7eb;
-    line-height: 1.55;
-  }
-
-  .jarvis-output strong {
-    color: #c4b5fd;
-  }
-
-  @media (max-width: 860px) {
-    .main-layout {
-      grid-template-columns: 1fr;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JARVIS Notes Intelligence</title>
+  <style>
+    :root {
+      --bg: #060b18;
+      --bg-2: #0b1220;
+      --panel: rgba(18, 24, 38, 0.92);
+      --line: rgba(148, 163, 184, 0.22);
+      --line-soft: rgba(148, 163, 184, 0.10);
+      --text: #e5eefc;
+      --muted: #8ea3bd;
+      --cyan: #72e6ff;
+      --violet: #9a7bff;
+      --green: #67f2b7;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
     }
-  }
-</style>
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(114, 230, 255, 0.16), transparent 26%),
+        radial-gradient(circle at top right, rgba(154, 123, 255, 0.15), transparent 30%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body { padding: 28px; }
+
+    .shell {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 22px;
+      min-height: calc(100vh - 56px);
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .notes-panel {
+      padding: 20px 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--line-soft);
+      padding-bottom: 12px;
+    }
+
+    .title-wrap h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 2vw, 2.4rem);
+      letter-spacing: -0.05em;
+    }
+
+    .title-wrap .subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid rgba(103, 242, 183, 0.35);
+      background: rgba(103, 242, 183, 0.08);
+      color: var(--green);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-badge::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 12px rgba(103, 242, 183, 0.9);
+    }
+
+    .search-box { width: 100%; position: relative; }
+    .search-box input {
+      width: 100%;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      color: var(--text);
+      padding: 16px 18px;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.2s ease;
+    }
+    .search-box input:focus {
+      border-color: rgba(110, 168, 254, 0.7);
+      box-shadow: 0 0 0 4px rgba(110, 168, 254, 0.12);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip, .primary-btn, .mini-btn {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--text);
+      background: rgba(255,255,255,0.02);
+      transition: 0.2s ease;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .chip, .mini-btn {
+      padding: 8px 12px;
+      font-size: 0.85rem;
+    }
+
+    .chip:hover, .primary-btn:hover, .mini-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(114, 230, 255, 0.4);
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, rgba(110, 168, 254, 0.24), rgba(154, 123, 255, 0.2));
+      padding: 10px 14px;
+    }
+
+    .results-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 420px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .note-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 18px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .note-card:hover {
+      border-color: rgba(114, 230, 255, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .note-card.top-hit {
+      border-left: 4px solid var(--cyan);
+      background: linear-gradient(90deg, rgba(114, 230, 255, 0.08), rgba(255,255,255,0.01));
+    }
+
+    .note-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .note-title {
+      font-size: 1.02rem;
+      font-weight: 700;
+    }
+
+    .note-meta {
+      color: var(--muted);
+      font-size: 0.8rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 8px;
+      background: rgba(110, 168, 254, 0.12);
+      border: 1px solid rgba(110, 168, 254, 0.3);
+      color: #cae2ff;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .note-text {
+      color: #dfeaf7;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .note-attachments {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .assistant-panel {
+      padding: 18px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .assistant-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top center, rgba(154, 123, 255, 0.18), transparent 35%);
+      pointer-events: none;
+    }
+
+    .assistant-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .jarvis-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .jarvis-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      box-shadow: 0 0 20px rgba(154, 123, 255, 0.6);
+      display: grid;
+      place-items: center;
+      font-size: 0.7rem;
+      font-weight: 900;
+    }
+
+    .assistant-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .mini-btn {
+      background: rgba(154, 123, 255, 0.08);
+      border-color: rgba(154, 123, 255, 0.3);
+      color: #ddd4ff;
+    }
+
+    .assistant-box {
+      position: relative;
+      z-index: 1;
+      border: 1px solid var(--line);
+      background: rgba(7, 12, 20, 0.72);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .assistant-box textarea {
+      width: 100%;
+      min-height: 110px;
+      resize: vertical;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(15, 19, 29, 0.9);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 14px 14px 8px;
+      font-size: 0.96rem;
+      outline: none;
+    }
+
+    .assistant-box textarea:focus {
+      border-color: rgba(114, 230, 255, 0.6);
+      box-shadow: 0 0 0 4px rgba(114, 230, 255, 0.08);
+    }
+
+    .assistant-box .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .conversation {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 240px;
+      max-height: 370px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .message {
+      max-width: 92%;
+      border-radius: 16px;
+      padding: 12px 14px;
+      line-height: 1.58;
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      font-size: 0.92rem;
+    }
+
+    .message.bot {
+      background: rgba(255,255,255,0.02);
+      color: #ebf2ff;
+      border-bottom-left-radius: 6px;
+      align-self: flex-start;
+    }
+
+    .message.user {
+      background: linear-gradient(135deg, rgba(154, 123, 255, 0.16), rgba(110, 168, 254, 0.14));
+      color: #f2f5ff;
+      border-bottom-right-radius: 6px;
+      align-self: flex-end;
+    }
+
+    .empty-state {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1000px) {
+      .shell { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-  <div class="app-shell">
-    <div class="main-layout">
-      <section class="notes-panel">
-        <h1>📝 Notes App Search Sample</h1>
-        <p><strong>Status:</strong> Sample Project for Akun Nyx | API Key Validated | Credit: [UNLIMITED]</p>
-        <input type="text" class="search-bar" id="search" placeholder="Search notes... (try: bike, tag:work, notes created last week, attachment:pdf)">
-        <div class="filters">
-          <button class="filter-btn" onclick="filterSuggested('drawings')">Notes with Drawings</button>
-          <button class="filter-btn" onclick="filterSuggested('attachments')">With Attachments</button>
-          <button class="clear-btn" onclick="clearSearch()">Clear</button>
+  <div class="shell">
+    <section class="panel notes-panel">
+      <div class="topbar">
+        <div class="title-wrap">
+          <h1>JARVIS Notes</h1>
+          <div class="subtitle">Apple Notes-inspired intelligent memory search</div>
         </div>
-        <div id="results" class="results"></div>
-      </section>
+        <div class="status-badge">online</div>
+      </div>
 
-      <aside class="jarvis-panel">
-        <h2>JARVIS</h2>
-        <div class="status-pill">Status: Online</div>
+      <div class="search-box">
+        <input id="search" type="text" placeholder="Search notes... try: bike, tag:work, notes created last week, attachment:pdf" />
+      </div>
 
-        <div class="jarvis-actions">
-          <button class="jarvis-mini" data-jarvis="summarize">Summarize</button>
-          <button class="jarvis-mini" data-jarvis="top hits">Top Hits</button>
-          <button class="jarvis-mini" data-jarvis="action plan">Action Plan</button>
+      <div class="toolbar">
+        <div class="chip-row">
+          <button class="chip" data-filter="drawings">Drawings</button>
+          <button class="chip" data-filter="attachments">Attachments</button>
+          <button class="chip" data-filter="work">Work Notes</button>
+          <button class="chip" data-filter="clear">Clear</button>
         </div>
+      </div>
 
-        <textarea id="jarvis-input" class="jarvis-input" placeholder="Ask Jarvis: summarize my work notes, find bike plans, or create an action plan">summarize my work notes</textarea>
-        <button id="jarvis-run" class="jarvis-run">Ask JARVIS</button>
-        <div id="jarvis-output" class="jarvis-output">
-          <strong>Ready.</strong> I can search, rank, summarize, and suggest the next action based on your notes.
+      <div class="results-wrap">
+        <h2 class="section-title">Search results</h2>
+        <div id="results" class="results-list"></div>
+      </div>
+    </section>
+
+    <aside class="panel assistant-panel">
+      <div class="assistant-header">
+        <div class="jarvis-brand">
+          <div class="jarvis-mark">J</div>
+          <span>JARVIS</span>
         </div>
-      </aside>
-    </div>
+      </div>
+
+      <div class="assistant-actions">
+        <button class="mini-btn" data-command="summarize">Summarize</button>
+        <button class="mini-btn" data-command="top hits">Top Hits</button>
+        <button class="mini-btn" data-command="action plan">Action Plan</button>
+      </div>
+
+      <div class="assistant-box">
+        <textarea id="assistant-input" placeholder="Ask JARVIS: summarize my work notes, find bike plans, or action plan">summarize my work notes</textarea>
+        <div class="footer">
+          <span class="hint">Natural language + ranked note intelligence</span>
+          <button id="run-assistant" class="primary-btn">Ask JARVIS</button>
+        </div>
+      </div>
+
+      <div id="conversation" class="conversation">
+        <div class="message bot">Good morning. I’m JARVIS. I can search, rank, summarize, and plan based on your notes.</div>
+      </div>
+    </aside>
   </div>
 
   <script>
     const notes = [
-      { id: 1, title: "Bike Ride Plans", body: "Planning a bike ride this weekend in the park. Don't forget helmet.", tags: ["#outdoor", "#weekend"], created: "2026-10-15", modified: "2026-10-20", attachments: ["map:route.gpx"], shared: false, locked: false, checklist: false },
-      { id: 2, title: "Work Meeting Notes", body: "Discussed project timeline and budget. #work Follow up with team.", tags: ["#work", "#meeting"], created: "2026-10-18", modified: "2026-10-19", attachments: ["doc:agenda.pdf"], shared: true, locked: false, checklist: true },
-      { id: 3, title: "Handwritten Recipe", body: "Scanned handwritten notes about apple pie recipe.", tags: ["#recipe"], created: "2026-09-01", modified: "2026-09-01", attachments: ["scan:recipe.pdf"], shared: false, locked: false, checklist: false },
-      { id: 4, title: "Locked Personal Note", body: "Secret thoughts. Only title searchable.", tags: ["#personal"], created: "2026-10-10", modified: "2026-10-10", attachments: [], shared: false, locked: true, checklist: false },
-      { id: 5, title: "Quick Sketch", body: "Drawing of a bike and park.", tags: ["#drawing"], created: "2026-10-21", modified: "2026-10-21", attachments: ["sketch:bike.png"], shared: false, locked: false, checklist: false }
+      { id: 1, title: 'Bike Ride Plans', body: 'Planning a bike ride this weekend in the park. Don’t forget helmet.', tags: ['#outdoor', '#weekend'], created: '2026-10-15', modified: '2026-10-20', attachments: ['map:route.gpx'], shared: false, locked: false, checklist: false },
+      { id: 2, title: 'Work Meeting Notes', body: 'Discussed project timeline and budget. #work Follow up with team.', tags: ['#work', '#meeting'], created: '2026-10-18', modified: '2026-10-19', attachments: ['doc:agenda.pdf'], shared: true, locked: false, checklist: true },
+      { id: 3, title: 'Handwritten Recipe', body: 'Scanned handwritten notes about apple pie recipe.', tags: ['#recipe'], created: '2026-09-01', modified: '2026-09-01', attachments: ['scan:recipe.pdf'], shared: false, locked: false, checklist: false },
+      { id: 4, title: 'Locked Personal Note', body: 'Secret thoughts. Only title searchable.', tags: ['#personal'], created: '2026-10-10', modified: '2026-10-10', attachments: [], shared: false, locked: true, checklist: false },
+      { id: 5, title: 'Quick Sketch', body: 'Drawing of a bike and park.', tags: ['#drawing'], created: '2026-10-21', modified: '2026-10-21', attachments: ['sketch:bike.png'], shared: false, locked: false, checklist: false },
+      { id: 6, title: 'Launch Brief', body: 'Prep early access launch checklist and user outreach. Team follows up before Friday.', tags: ['#product', '#launch'], created: '2026-10-21', modified: '2026-10-21', attachments: ['slides:launchdeck.pdf'], shared: true, locked: false, checklist: true }
     ];
 
     function parseNaturalLanguage(query) {
-      const now = new Date('2026-10-21');
-      let filters = { keywords: query.toLowerCase() };
+      const now = new Date('2026-10-21T00:00:00');
+      const filters = { keywords: query.toLowerCase() };
 
-      if (query.includes('created last week') || query.includes('notes created last week')) {
-        filters.dateFrom = new Date(now - 7 * 24 * 60 * 60 * 1000);
+      if (query.toLowerCase().includes('created last week') || query.toLowerCase().includes('notes created last week')) {
+        filters.dateFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         filters.keywords = filters.keywords.replace(/notes created last week|created last week/g, '').trim();
       }
 
-      if (query.includes('modified today')) {
+      if (query.toLowerCase().includes('modified today')) {
         filters.dateFrom = now;
         filters.keywords = filters.keywords.replace(/modified today/g, '').trim();
       }
@@ -253,164 +467,216 @@
       return filters;
     }
 
-    function searchNotes(query) {
-      if (!query.trim()) return { topHits: [], notes: [] };
+    function searchNotes(rawQuery) {
+      const query = (rawQuery || '').trim();
+      if (!query) return { topHits: [], notes: [] };
 
       const parsed = parseNaturalLanguage(query);
       const q = parsed.keywords.toLowerCase();
 
       let results = notes.filter(note => {
-        const searchable = note.locked ? note.title : note.title + ' ' + note.body + ' ' + note.tags.join(' ') + ' ' + note.attachments.join(' ');
+        const searchable = note.locked
+          ? note.title
+          : note.title + ' ' + note.body + ' ' + note.tags.join(' ') + ' ' + note.attachments.join(' ');
+
         let match = searchable.toLowerCase().includes(q) || !q;
 
-        if (query.includes('tag:')) {
+        if (query.toLowerCase().includes('tag:')) {
           const tag = query.match(/tag:(\w+)/)?.[1];
           if (tag && !note.tags.some(t => t.toLowerCase().includes(tag))) match = false;
         }
 
-        if (query.includes('attachment:')) {
+        if (query.toLowerCase().includes('attachment:')) {
           const type = query.match(/attachment:(\w+)/)?.[1];
           if (type && !note.attachments.some(a => a.toLowerCase().includes(type))) match = false;
         }
 
-        if (query.includes('locked:')) match = match && note.locked;
-        if (query.includes('shared:')) match = match && note.shared;
-        if (query.includes('checklist:')) match = match && note.checklist;
+        if (query.toLowerCase().includes('locked:')) match = match && note.locked;
+        if (query.toLowerCase().includes('shared:')) match = match && note.shared;
+        if (query.toLowerCase().includes('checklist:')) match = match && note.checklist;
 
         if (parsed.dateFrom) {
-          const mod = new Date(note.modified);
-          if (mod < parsed.dateFrom) match = false;
+          const modified = new Date(note.modified);
+          if (modified < parsed.dateFrom) match = false;
         }
 
         return match;
       });
 
       results.sort((a, b) => {
-        let scoreA = (a.title.toLowerCase().includes(q) ? 100 : 0) + (Date.parse(b.modified) - Date.parse(a.modified)) / 86400000;
-        let scoreB = (b.title.toLowerCase().includes(q) ? 100 : 0) + (Date.parse(a.modified) - Date.parse(b.modified)) / 86400000;
+        const scoreA = (a.title.toLowerCase().includes(q) ? 100 : 0) + ((Date.parse(b.modified) - Date.parse(a.modified)) / 86400000);
+        const scoreB = (b.title.toLowerCase().includes(q) ? 100 : 0) + ((Date.parse(a.modified) - Date.parse(b.modified)) / 86400000);
         return scoreB - scoreA;
       });
 
-      const topHits = results.slice(0, 2);
-      return { topHits, notes: results };
+      return { topHits: results.slice(0, 2), notes: results };
     }
 
-    function createCard(note, isTop = false) {
-      const div = document.createElement('div');
-      div.className = 'note-card' + (isTop ? ' top-hit' : '');
-      div.innerHTML = `
-        <strong>${note.title}</strong>
-        <div class="meta">${note.modified} | ${note.tags.map(t => `<span class="tag">${t}</span>`).join('')} ${note.locked ? '🔒' : ''} ${note.shared ? '👥' : ''}</div>
-        <p>${note.locked ? '[Locked - title only]' : note.body.substring(0, 100) + '...'}</p>
-        ${note.attachments.length ? `<div>Attachments: ${note.attachments.join(', ')}</div>` : ''}
+    function renderCard(note, isTop = false) {
+      const card = document.createElement('article');
+      card.className = 'note-card' + (isTop ? ' top-hit' : '');
+      card.innerHTML = `
+        <div class="note-head">
+          <div class="note-title">${note.title}</div>
+          ${note.locked ? '<span class="tag">Locked</span>' : ''}
+        </div>
+        <div class="note-meta">
+          <span>${note.modified}</span>
+          <span>•</span>
+          <span>${note.tags.join(' ')}</span>
+          ${note.shared ? '<span>• Shared</span>' : ''}
+        </div>
+        <p class="note-text">${note.locked ? '[Locked — title only]' : note.body.substring(0, 120) + (note.body.length > 120 ? '...' : '')}</p>
+        ${note.attachments.length ? `<div class="note-attachments">Attachments: ${note.attachments.join(', ')}</div>` : ''}
       `;
-      div.onclick = () => alert(`Opening note: ${note.title}\n\n(Full in-note search would highlight matches here.)`);
-      return div;
+      card.addEventListener('click', () => alert(`Opening note: ${note.title}\n\n${note.body}`));
+      return card;
     }
 
     function renderResults(data) {
-      const container = document.getElementById('results');
-      container.innerHTML = '';
+      const resultsEl = document.getElementById('results');
+      resultsEl.innerHTML = '';
 
       if (data.topHits.length) {
-        container.innerHTML += '<h2>Top Hits</h2>';
-        data.topHits.forEach(note => container.appendChild(createCard(note, true)));
+        const topTitle = document.createElement('h3');
+        topTitle.className = 'section-title';
+        topTitle.textContent = 'Top hits';
+        resultsEl.appendChild(topTitle);
+
+        data.topHits.forEach(note => {
+          resultsEl.appendChild(renderCard(note, true));
+        });
       }
 
       if (data.notes.length) {
-        container.innerHTML += '<h2>Notes</h2>';
-        data.notes.forEach(note => container.appendChild(createCard(note)));
+        const allTitle = document.createElement('h3');
+        allTitle.className = 'section-title';
+        allTitle.textContent = 'All matches';
+        resultsEl.appendChild(allTitle);
+
+        data.notes.forEach(note => {
+          resultsEl.appendChild(renderCard(note, false));
+        });
       }
 
-      if (!data.notes.length && !data.topHits.length) container.innerHTML = '<p>No matching notes found.</p>';
-    }
-
-    function filterSuggested(type) {
-      document.getElementById('search').value = type === 'drawings' ? 'attachment:sketch OR tag:drawing' : 'attachment:';
-      document.getElementById('search').dispatchEvent(new Event('input'));
-    }
-
-    function clearSearch() {
-      document.getElementById('search').value = '';
-      document.getElementById('search').dispatchEvent(new Event('input'));
-    }
-
-    function statSentence(list) {
-      if (!list.length) return 'No notes match the current query.';
-      const titles = list.slice(0, 3).map(n => n.title);
-      return `I found ${list.length} relevant notes: ${titles.join(', ')}.`;
-    }
-
-    function thinkJarvis(query, results) {
-      const q = (query || '').trim().toLowerCase();
-      const list = Array.isArray(results) ? results : [];
-
-      if (!q) {
-        return '<strong>Ready.</strong> Ask me to summarize, rank, or plan action from the notes.';
+      if (!data.topHits.length && !data.notes.length) {
+        resultsEl.innerHTML = '<div class="empty-state">No notes match the current query. Try searching for “bike”, “tag:work”, or “modified today”.</div>';
       }
+    }
+
+    function createMessage(role, text) {
+      const div = document.createElement('div');
+      div.className = `message ${role}`;
+      div.innerHTML = text;
+      return div;
+    }
+
+    function updateAssistant(query) {
+      const conversation = document.getElementById('conversation');
+      conversation.innerHTML = '';
+
+      const userMessage = createMessage('user', query || 'How are my notes organized today?');
+      conversation.appendChild(userMessage);
+
+      const result = searchNotes(query || '');
+      const list = result.notes;
+
+      if (!query || !query.trim()) {
+        conversation.appendChild(createMessage('bot', '<strong>Ready.</strong> Ask me to summarize, rank, or plan based on your notes.'));
+        return;
+      }
+
+      const q = query.toLowerCase();
+      let response = '';
 
       if (q.includes('summarize') || q.includes('summary')) {
-        if (!list.length) return '<strong>Summary:</strong> No notes match this query yet, so there is nothing to summarize.';
-
-        const top = list.slice(0, 3);
-        const summary = top.map(note => `${note.title} — ${note.tags.join(', ')}`).join('<br>');
-        return `<strong>Summary:</strong><br>${summary}<br><br>Overall: ${list.length} notes are relevant, with the strongest match centered on ${top[0].title}.`;
-      }
-
-      if (q.includes('top hit') || q.includes('ranking') || q.includes('rank')) {
-        if (!list.length) return '<strong>Ranking:</strong> There are no top hits for the current query.';
-
-        const top = list.slice(0, 2).map((note, i) => `${i + 1}. ${note.title}`).join('<br>');
-        return `<strong>Top Hits:</strong><br>${top}`;
-      }
-
-      if (q.includes('plan') || q.includes('action')) {
-        const actionItems = list.length ? list.slice(0, 3).map(note => `- Follow up on: ${note.title}`).join('<br>') : '- Review the current note list<br>- Identify the highest-priority item';
-        return `<strong>Action Plan:</strong><br>${actionItems}<br><br>Priority: start with the most recent and most relevant note, then confirm any required follow-up.`;
-      }
-
-      if (q.includes('work') || q.includes('meeting')) {
+        if (!list.length) {
+          response = '<strong>Summary:</strong> There are no matching notes right now.';
+        } else {
+          const top = list.slice(0, 3);
+          const lines = top.map(note => `• <strong>${note.title}</strong> — ${note.tags.join(', ')}`).join('<br>');
+          response = `<strong>Summary:</strong><br>${lines}<br><br>There are ${list.length} relevant notes. The strongest match is <strong>${top[0].title}</strong>.`;
+        }
+      } else if (q.includes('top hit') || q.includes('rank') || q.includes('ranking')) {
+        if (!list.length) {
+          response = '<strong>Ranking:</strong> No top hits found.';
+        } else {
+          const top = list.slice(0, 3).map((note, index) => `${index + 1}. <strong>${note.title}</strong>`).join('<br>');
+          response = `<strong>Top hits:</strong><br>${top}`;
+        }
+      } else if (q.includes('action') || q.includes('plan')) {
+        if (!list.length) {
+          response = '<strong>Action Plan:</strong><br>• Review the list of notes<br>• Prioritize likely follow-ups<br>• Search by tag or keyword to narrow focus';
+        } else {
+          const actions = list.slice(0, 3).map(note => `• Follow up on <strong>${note.title}</strong>`).join('<br>');
+          response = `<strong>Action Plan:</strong><br>${actions}<br><br>Priority: start with the most recent and highest relevance note.`;
+        }
+      } else if (q.includes('work')) {
         const workNotes = list.filter(note => note.tags.some(tag => tag.toLowerCase().includes('work')) || note.title.toLowerCase().includes('work'));
-        if (!workNotes.length) return '<strong>Work Focus:</strong> No work-related notes currently match your query.';
-        return `<strong>Work Focus:</strong><br>${workNotes.map(note => `- ${note.title}: ${note.body.slice(0, 80)}...`).join('<br>')}`;
+        if (workNotes.length) {
+          response = `<strong>Work focus:</strong><br>${workNotes.map(note => `• ${note.title}`).join('<br>')}`;
+        } else {
+          response = '<strong>Work focus:</strong> No work-related notes are matching this query.';
+        }
+      } else if (list.length) {
+        response = `<strong>Insight:</strong> I found ${list.length} relevant notes. The best match is <strong>${list[0].title}</strong> with the newest update and strongest keyword alignment.`;
+      } else {
+        response = '<strong>No result:</strong> Try a query like “bike”, “tag:work”, “attachment:pdf”, or “notes created last week”.';
       }
 
-      if (list.length) {
-        return `<strong>Insight:</strong> ${statSentence(list)}<br><br>Recommended next step: focus on ${list[0].title} because it has the strongest match and most recent update.`;
-      }
-
-      return `<strong>Search Result:</strong> No notes match this request. Try queries like 'bike', 'tag:work', or 'notes created last week'.`;
+      conversation.appendChild(createMessage('bot', response));
     }
 
-    function updateJarvis(query) {
-      const current = searchNotes(query);
-      document.getElementById('jarvis-output').innerHTML = thinkJarvis(query, current.notes);
-    }
-
-    document.getElementById('search').addEventListener('input', (e) => {
-      const data = searchNotes(e.target.value);
+    function applySearch(value) {
+      const data = searchNotes(value);
       renderResults(data);
-      updateJarvis(e.target.value);
+      updateAssistant(value);
+    }
+
+    document.getElementById('search').addEventListener('input', (event) => {
+      applySearch(event.target.value);
     });
 
-    document.getElementById('jarvis-run').addEventListener('click', () => {
-      const query = document.getElementById('jarvis-input').value.trim();
-      const current = searchNotes(query || document.getElementById('search').value);
-      document.getElementById('jarvis-output').innerHTML = thinkJarvis(query || document.getElementById('search').value, current.notes);
+    document.getElementById('run-assistant').addEventListener('click', () => {
+      const query = document.getElementById('assistant-input').value.trim();
+      if (!query) return;
+      applySearch(query);
     });
 
-    document.querySelectorAll('[data-jarvis]').forEach(button => {
+    document.querySelectorAll('[data-filter]').forEach(button => {
       button.addEventListener('click', () => {
-        const preset = button.getAttribute('data-jarvis');
-        const input = document.getElementById('jarvis-input');
-        input.value = preset;
-        const current = searchNotes(preset);
-        document.getElementById('jarvis-output').innerHTML = thinkJarvis(preset, current.notes);
+        const filter = button.dataset.filter;
+        const input = document.getElementById('search');
+
+        if (filter === 'clear') {
+          input.value = '';
+          applySearch('');
+          return;
+        }
+
+        if (filter === 'drawings') {
+          input.value = 'tag:drawing OR attachment:sketch';
+        } else if (filter === 'attachments') {
+          input.value = 'attachment:';
+        } else if (filter === 'work') {
+          input.value = 'tag:work';
+        }
+
+        applySearch(input.value);
       });
     });
 
-    renderResults(searchNotes(''));
-    updateJarvis('');
+    document.querySelectorAll('[data-command]').forEach(button => {
+      button.addEventListener('click', () => {
+        const command = button.dataset.command;
+        const input = document.getElementById('assistant-input');
+        input.value = command;
+        applySearch(command);
+      });
+    });
+
+    renderResults(searchNotes('bike'));
+    updateAssistant('summarize my work notes');
   </script>
 </body>
 </html>
