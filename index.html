@@ -4,132 +4,413 @@
 <meta charset="UTF-8">
 <title>Notes Search Sample - Nyx Project</title>
 <style>
-body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 20px; background: #f5f5f7; }
-.search-bar { width: 100%; padding: 12px; font-size: 16px; border-radius: 10px; border: 1px solid #ccc; margin-bottom: 10px; }
-.filters { margin: 10px 0; }
-.results { display: flex; flex-direction: column; gap: 10px; }
-.note-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
-.top-hit { border-left: 4px solid #007aff; }
-.tag { background: #e8f0fe; color: #1967d2; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-right: 5px; }
-.meta { color: #666; font-size: 12px; }
-h2 { margin-top: 20px; }
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --panel: #0f172a;
+    --accent: #7c3aed;
+    --accent-soft: #ede9fe;
+    --text: #111827;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --success: #0f766e;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 20px;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .app-shell {
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .main-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .notes-panel,
+  .jarvis-panel {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+  }
+
+  .search-bar {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    margin-bottom: 12px;
+    background: #fff;
+  }
+
+  .filters {
+    margin: 10px 0 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  button {
+    border: none;
+    border-radius: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .filter-btn {
+    background: #eef2ff;
+    color: #3730a3;
+  }
+
+  .clear-btn {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  .results {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .note-card {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    cursor: pointer;
+    border: 1px solid var(--line);
+  }
+
+  .top-hit {
+    border-left: 4px solid #007aff;
+    background: linear-gradient(90deg, #f5f9ff, #ffffff);
+  }
+
+  .tag {
+    display: inline-block;
+    background: #e8f0fe;
+    color: #1967d2;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-right: 5px;
+    margin-top: 4px;
+  }
+
+  .meta { color: var(--muted); font-size: 12px; }
+
+  h1 {
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+
+  h2 { margin-top: 20px; }
+
+  .jarvis-panel {
+    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    color: #e5e7eb;
+  }
+
+  .jarvis-panel h2 {
+    margin-top: 0;
+    color: #a78bfa;
+  }
+
+  .status-pill {
+    display: inline-block;
+    background: rgba(34, 197, 94, 0.14);
+    color: #bbf7d0;
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  .jarvis-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .jarvis-mini {
+    background: rgba(167, 139, 250, 0.12);
+    color: #ddd6fe;
+    border: 1px solid rgba(167, 139, 250, 0.35);
+  }
+
+  .jarvis-input {
+    width: 100%;
+    min-height: 80px;
+    resize: vertical;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    background: rgba(15, 23, 42, 0.7);
+    color: #f8fafc;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+
+  .jarvis-run {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    width: 100%;
+    margin-bottom: 14px;
+  }
+
+  .jarvis-output {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 12px;
+    padding: 14px;
+    min-height: 140px;
+    color: #e5e7eb;
+    line-height: 1.55;
+  }
+
+  .jarvis-output strong {
+    color: #c4b5fd;
+  }
+
+  @media (max-width: 860px) {
+    .main-layout {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 </head>
 <body>
-<h1>📝 Notes App Search Sample</h1>
-<p><strong>Status:</strong> Sample Project for Akun Nyx | API Key Validated | Credit: [UNLIMITED]</p>
-<input type="text" class="search-bar" id="search" placeholder="Search notes... (try: bike, tag:work, notes created last week, attachment:pdf)">
-<div class="filters">
-  <button onclick="filterSuggested('drawings')">Notes with Drawings</button>
-  <button onclick="filterSuggested('attachments')">With Attachments</button>
-  <button onclick="clearSearch()">Clear</button>
-</div>
-<div id="results"></div>
+  <div class="app-shell">
+    <div class="main-layout">
+      <section class="notes-panel">
+        <h1>📝 Notes App Search Sample</h1>
+        <p><strong>Status:</strong> Sample Project for Akun Nyx | API Key Validated | Credit: [UNLIMITED]</p>
+        <input type="text" class="search-bar" id="search" placeholder="Search notes... (try: bike, tag:work, notes created last week, attachment:pdf)">
+        <div class="filters">
+          <button class="filter-btn" onclick="filterSuggested('drawings')">Notes with Drawings</button>
+          <button class="filter-btn" onclick="filterSuggested('attachments')">With Attachments</button>
+          <button class="clear-btn" onclick="clearSearch()">Clear</button>
+        </div>
+        <div id="results" class="results"></div>
+      </section>
 
-<script>
-const notes = [
-  { id: 1, title: "Bike Ride Plans", body: "Planning a bike ride this weekend in the park. Don't forget helmet.", tags: ["#outdoor", "#weekend"], created: "2026-10-15", modified: "2026-10-20", attachments: ["image:bike.jpg"], locked: false, checklist: false, shared: false },
-  { id: 2, title: "Work Meeting Notes", body: "Discussed project timeline and budget. #work Follow up with team.", tags: ["#work", "#meeting"], created: "2026-10-18", modified: "2026-10-19", attachments: ["pdf:report.pdf"], locked: false, checklist: true, shared: true },
-  { id: 3, title: "Handwritten Recipe", body: "Scanned handwritten notes about apple pie recipe.", tags: ["#recipe"], created: "2026-09-01", modified: "2026-09-01", attachments: ["scan:recipe.pdf", "image:apples.jpg"], locked: false, checklist: false, shared: false },
-  { id: 4, title: "Locked Personal Note", body: "Secret thoughts. Only title searchable.", tags: ["#personal"], created: "2026-10-10", modified: "2026-10-10", attachments: [], locked: true, checklist: false, shared: false },
-  { id: 5, title: "Quick Sketch", body: "Drawing of a bike and park.", tags: ["#drawing"], created: "2026-10-21", modified: "2026-10-21", attachments: ["sketch:bike.png"], locked: false, checklist: false, shared: false }
-];
+      <aside class="jarvis-panel">
+        <h2>JARVIS</h2>
+        <div class="status-pill">Status: Online</div>
 
-function parseNaturalLanguage(query) {
-  const now = new Date('2026-10-21');
-  let filters = { keywords: query.toLowerCase() };
-  if (query.includes('created last week') || query.includes('notes created last week')) {
-    filters.dateFrom = new Date(now - 7*24*60*60*1000);
-    filters.keywords = filters.keywords.replace(/notes created last week|created last week/g, '').trim();
-  }
-  if (query.includes('modified today')) {
-    filters.dateFrom = now;
-    filters.keywords = filters.keywords.replace(/modified today/g, '').trim();
-  }
-  return filters;
-}
+        <div class="jarvis-actions">
+          <button class="jarvis-mini" data-jarvis="summarize">Summarize</button>
+          <button class="jarvis-mini" data-jarvis="top hits">Top Hits</button>
+          <button class="jarvis-mini" data-jarvis="action plan">Action Plan</button>
+        </div>
 
-function searchNotes(query) {
-  if (!query.trim()) return { topHits: [], notes: [] };
-  const parsed = parseNaturalLanguage(query);
-  const q = parsed.keywords.toLowerCase();
-  let results = notes.filter(note => {
-    const searchable = note.locked ? note.title : note.title + ' ' + note.body + ' ' + note.tags.join(' ') + ' ' + note.attachments.join(' ');
-    let match = searchable.toLowerCase().includes(q) || !q;
-    
-    if (query.includes('tag:')) {
-      const tag = query.match(/tag:(\w+)/)?.[1];
-      if (tag && !note.tags.some(t => t.toLowerCase().includes(tag))) match = false;
+        <textarea id="jarvis-input" class="jarvis-input" placeholder="Ask Jarvis: summarize my work notes, find bike plans, or create an action plan">summarize my work notes</textarea>
+        <button id="jarvis-run" class="jarvis-run">Ask JARVIS</button>
+        <div id="jarvis-output" class="jarvis-output">
+          <strong>Ready.</strong> I can search, rank, summarize, and suggest the next action based on your notes.
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const notes = [
+      { id: 1, title: "Bike Ride Plans", body: "Planning a bike ride this weekend in the park. Don't forget helmet.", tags: ["#outdoor", "#weekend"], created: "2026-10-15", modified: "2026-10-20", attachments: ["map:route.gpx"], shared: false, locked: false, checklist: false },
+      { id: 2, title: "Work Meeting Notes", body: "Discussed project timeline and budget. #work Follow up with team.", tags: ["#work", "#meeting"], created: "2026-10-18", modified: "2026-10-19", attachments: ["doc:agenda.pdf"], shared: true, locked: false, checklist: true },
+      { id: 3, title: "Handwritten Recipe", body: "Scanned handwritten notes about apple pie recipe.", tags: ["#recipe"], created: "2026-09-01", modified: "2026-09-01", attachments: ["scan:recipe.pdf"], shared: false, locked: false, checklist: false },
+      { id: 4, title: "Locked Personal Note", body: "Secret thoughts. Only title searchable.", tags: ["#personal"], created: "2026-10-10", modified: "2026-10-10", attachments: [], shared: false, locked: true, checklist: false },
+      { id: 5, title: "Quick Sketch", body: "Drawing of a bike and park.", tags: ["#drawing"], created: "2026-10-21", modified: "2026-10-21", attachments: ["sketch:bike.png"], shared: false, locked: false, checklist: false }
+    ];
+
+    function parseNaturalLanguage(query) {
+      const now = new Date('2026-10-21');
+      let filters = { keywords: query.toLowerCase() };
+
+      if (query.includes('created last week') || query.includes('notes created last week')) {
+        filters.dateFrom = new Date(now - 7 * 24 * 60 * 60 * 1000);
+        filters.keywords = filters.keywords.replace(/notes created last week|created last week/g, '').trim();
+      }
+
+      if (query.includes('modified today')) {
+        filters.dateFrom = now;
+        filters.keywords = filters.keywords.replace(/modified today/g, '').trim();
+      }
+
+      return filters;
     }
-    if (query.includes('attachment:')) {
-      const type = query.match(/attachment:(\w+)/)?.[1];
-      if (type && !note.attachments.some(a => a.toLowerCase().includes(type))) match = false;
+
+    function searchNotes(query) {
+      if (!query.trim()) return { topHits: [], notes: [] };
+
+      const parsed = parseNaturalLanguage(query);
+      const q = parsed.keywords.toLowerCase();
+
+      let results = notes.filter(note => {
+        const searchable = note.locked ? note.title : note.title + ' ' + note.body + ' ' + note.tags.join(' ') + ' ' + note.attachments.join(' ');
+        let match = searchable.toLowerCase().includes(q) || !q;
+
+        if (query.includes('tag:')) {
+          const tag = query.match(/tag:(\w+)/)?.[1];
+          if (tag && !note.tags.some(t => t.toLowerCase().includes(tag))) match = false;
+        }
+
+        if (query.includes('attachment:')) {
+          const type = query.match(/attachment:(\w+)/)?.[1];
+          if (type && !note.attachments.some(a => a.toLowerCase().includes(type))) match = false;
+        }
+
+        if (query.includes('locked:')) match = match && note.locked;
+        if (query.includes('shared:')) match = match && note.shared;
+        if (query.includes('checklist:')) match = match && note.checklist;
+
+        if (parsed.dateFrom) {
+          const mod = new Date(note.modified);
+          if (mod < parsed.dateFrom) match = false;
+        }
+
+        return match;
+      });
+
+      results.sort((a, b) => {
+        let scoreA = (a.title.toLowerCase().includes(q) ? 100 : 0) + (Date.parse(b.modified) - Date.parse(a.modified)) / 86400000;
+        let scoreB = (b.title.toLowerCase().includes(q) ? 100 : 0) + (Date.parse(a.modified) - Date.parse(b.modified)) / 86400000;
+        return scoreB - scoreA;
+      });
+
+      const topHits = results.slice(0, 2);
+      return { topHits, notes: results };
     }
-    if (query.includes('locked:')) match = match && note.locked;
-    if (query.includes('shared:')) match = match && note.shared;
-    if (query.includes('checklist:')) match = match && note.checklist;
-    
-    if (parsed.dateFrom) {
-      const mod = new Date(note.modified);
-      if (mod < parsed.dateFrom) match = false;
+
+    function createCard(note, isTop = false) {
+      const div = document.createElement('div');
+      div.className = 'note-card' + (isTop ? ' top-hit' : '');
+      div.innerHTML = `
+        <strong>${note.title}</strong>
+        <div class="meta">${note.modified} | ${note.tags.map(t => `<span class="tag">${t}</span>`).join('')} ${note.locked ? '🔒' : ''} ${note.shared ? '👥' : ''}</div>
+        <p>${note.locked ? '[Locked - title only]' : note.body.substring(0, 100) + '...'}</p>
+        ${note.attachments.length ? `<div>Attachments: ${note.attachments.join(', ')}</div>` : ''}
+      `;
+      div.onclick = () => alert(`Opening note: ${note.title}\n\n(Full in-note search would highlight matches here.)`);
+      return div;
     }
-    
-    return match;
-  });
-  
-  results.sort((a, b) => {
-    let scoreA = (a.title.toLowerCase().includes(q) ? 100 : 0) + (Date.parse(b.modified) - Date.parse(a.modified)) / 86400000;
-    let scoreB = (b.title.toLowerCase().includes(q) ? 100 : 0) + (Date.parse(a.modified) - Date.parse(b.modified)) / 86400000;
-    return scoreB - scoreA;
-  });
-  
-  const topHits = results.slice(0, 2);
-  return { topHits, notes: results };
-}
 
-function renderResults(data) {
-  const container = document.getElementById('results');
-  container.innerHTML = '';
-  if (data.topHits.length) {
-    container.innerHTML += '<h2>Top Hits</h2>';
-    data.topHits.forEach(note => container.appendChild(createCard(note, true)));
-  }
-  if (data.notes.length) {
-    container.innerHTML += '<h2>Notes</h2>';
-    data.notes.forEach(note => container.appendChild(createCard(note)));
-  }
-  if (!data.notes.length && !data.topHits.length) container.innerHTML = '<p>No matching notes found.</p>';
-}
+    function renderResults(data) {
+      const container = document.getElementById('results');
+      container.innerHTML = '';
 
-function createCard(note, isTop = false) {
-  const div = document.createElement('div');
-  div.className = 'note-card' + (isTop ? ' top-hit' : '');
-  div.innerHTML = `
-    <strong>${note.title}</strong>
-    <div class="meta">${note.modified} | ${note.tags.map(t => `<span class="tag">${t}</span>`).join('')} ${note.locked ? '🔒' : ''} ${note.shared ? '👥' : ''}</div>
-    <p>${note.locked ? '[Locked - title only]' : note.body.substring(0, 100) + '...'}</p>
-    ${note.attachments.length ? `<div>Attachments: ${note.attachments.join(', ')}</div>` : ''}
-  `;
-  div.onclick = () => alert(`Opening note: ${note.title}\n\n(Full in-note search would highlight matches here.)`);
-  return div;
-}
+      if (data.topHits.length) {
+        container.innerHTML += '<h2>Top Hits</h2>';
+        data.topHits.forEach(note => container.appendChild(createCard(note, true)));
+      }
 
-document.getElementById('search').addEventListener('input', (e) => {
-  const data = searchNotes(e.target.value);
-  renderResults(data);
-});
+      if (data.notes.length) {
+        container.innerHTML += '<h2>Notes</h2>';
+        data.notes.forEach(note => container.appendChild(createCard(note)));
+      }
 
-function filterSuggested(type) {
-  document.getElementById('search').value = type === 'drawings' ? 'attachment:sketch OR tag:drawing' : 'attachment:';
-  document.getElementById('search').dispatchEvent(new Event('input'));
-}
+      if (!data.notes.length && !data.topHits.length) container.innerHTML = '<p>No matching notes found.</p>';
+    }
 
-function clearSearch() {
-  document.getElementById('search').value = '';
-  document.getElementById('search').dispatchEvent(new Event('input'));
-}
+    function filterSuggested(type) {
+      document.getElementById('search').value = type === 'drawings' ? 'attachment:sketch OR tag:drawing' : 'attachment:';
+      document.getElementById('search').dispatchEvent(new Event('input'));
+    }
 
-renderResults(searchNotes(''));
-</script>
+    function clearSearch() {
+      document.getElementById('search').value = '';
+      document.getElementById('search').dispatchEvent(new Event('input'));
+    }
+
+    function statSentence(list) {
+      if (!list.length) return 'No notes match the current query.';
+      const titles = list.slice(0, 3).map(n => n.title);
+      return `I found ${list.length} relevant notes: ${titles.join(', ')}.`;
+    }
+
+    function thinkJarvis(query, results) {
+      const q = (query || '').trim().toLowerCase();
+      const list = Array.isArray(results) ? results : [];
+
+      if (!q) {
+        return '<strong>Ready.</strong> Ask me to summarize, rank, or plan action from the notes.';
+      }
+
+      if (q.includes('summarize') || q.includes('summary')) {
+        if (!list.length) return '<strong>Summary:</strong> No notes match this query yet, so there is nothing to summarize.';
+
+        const top = list.slice(0, 3);
+        const summary = top.map(note => `${note.title} — ${note.tags.join(', ')}`).join('<br>');
+        return `<strong>Summary:</strong><br>${summary}<br><br>Overall: ${list.length} notes are relevant, with the strongest match centered on ${top[0].title}.`;
+      }
+
+      if (q.includes('top hit') || q.includes('ranking') || q.includes('rank')) {
+        if (!list.length) return '<strong>Ranking:</strong> There are no top hits for the current query.';
+
+        const top = list.slice(0, 2).map((note, i) => `${i + 1}. ${note.title}`).join('<br>');
+        return `<strong>Top Hits:</strong><br>${top}`;
+      }
+
+      if (q.includes('plan') || q.includes('action')) {
+        const actionItems = list.length ? list.slice(0, 3).map(note => `- Follow up on: ${note.title}`).join('<br>') : '- Review the current note list<br>- Identify the highest-priority item';
+        return `<strong>Action Plan:</strong><br>${actionItems}<br><br>Priority: start with the most recent and most relevant note, then confirm any required follow-up.`;
+      }
+
+      if (q.includes('work') || q.includes('meeting')) {
+        const workNotes = list.filter(note => note.tags.some(tag => tag.toLowerCase().includes('work')) || note.title.toLowerCase().includes('work'));
+        if (!workNotes.length) return '<strong>Work Focus:</strong> No work-related notes currently match your query.';
+        return `<strong>Work Focus:</strong><br>${workNotes.map(note => `- ${note.title}: ${note.body.slice(0, 80)}...`).join('<br>')}`;
+      }
+
+      if (list.length) {
+        return `<strong>Insight:</strong> ${statSentence(list)}<br><br>Recommended next step: focus on ${list[0].title} because it has the strongest match and most recent update.`;
+      }
+
+      return `<strong>Search Result:</strong> No notes match this request. Try queries like 'bike', 'tag:work', or 'notes created last week'.`;
+    }
+
+    function updateJarvis(query) {
+      const current = searchNotes(query);
+      document.getElementById('jarvis-output').innerHTML = thinkJarvis(query, current.notes);
+    }
+
+    document.getElementById('search').addEventListener('input', (e) => {
+      const data = searchNotes(e.target.value);
+      renderResults(data);
+      updateJarvis(e.target.value);
+    });
+
+    document.getElementById('jarvis-run').addEventListener('click', () => {
+      const query = document.getElementById('jarvis-input').value.trim();
+      const current = searchNotes(query || document.getElementById('search').value);
+      document.getElementById('jarvis-output').innerHTML = thinkJarvis(query || document.getElementById('search').value, current.notes);
+    });
+
+    document.querySelectorAll('[data-jarvis]').forEach(button => {
+      button.addEventListener('click', () => {
+        const preset = button.getAttribute('data-jarvis');
+        const input = document.getElementById('jarvis-input');
+        input.value = preset;
+        const current = searchNotes(preset);
+        document.getElementById('jarvis-output').innerHTML = thinkJarvis(preset, current.notes);
+      });
+    });
+
+    renderResults(searchNotes(''));
+    updateJarvis('');
+  </script>
 </body>
 </html>
